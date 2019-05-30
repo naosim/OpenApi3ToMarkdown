@@ -50,8 +50,12 @@ const OpenApi3ToMarkdown = (function() {
       }
       Object.keys(obj).forEach(key => {
         if(key === '$ref') {
-          parent[parentKey] = componentsMap[obj[key]];
-          // console.log('find!', obj[key]);
+          Object.keys(componentsMap[obj[key]]).forEach(subKey => {
+            if(parent[parentKey][subKey] === undefined) {// 上書きはしない
+              parent[parentKey][subKey] = componentsMap[obj[key]][subKey];
+            }
+            
+          })
           
         } else {
           expandRefs(obj[key], componentsMap, obj, key);
@@ -60,9 +64,14 @@ const OpenApi3ToMarkdown = (function() {
     }
   
     // コンポーネント内を展開
-    while(JSON.stringify(swagger).indexOf('$ref') != -1) {
+    var i = 0;
+    while(JSON.stringify(swagger).indexOf('$ref') != -1 && i++ < 100) {
       console.log('FIND!');
       expandRefs(swagger, result);
+    }
+    if(i == 100) {
+      alert('無限ループ')
+      throw '無限ループ'
     }
   }
 
