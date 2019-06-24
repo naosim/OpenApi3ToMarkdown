@@ -170,9 +170,24 @@ const OpenApi3ToMarkdown = (function() {
       return jsonObj2Table(obj.properties[key], `${key}`, memo, obj.required, true);
     }, text)
   }
+
+  /**
+   * HTMLのテーブルを出力する
+   * @param {*} obj 
+   */
+  function formProperties2HtmlTable(obj) {
+    var md = formProperties2Table(obj);
+    var text = `<table><thead><tr><th>キー</th><th>必須</th><th>和名</th><th>説明</th></tr></thead>\n`
+    text += '<tbody>\n';
+    text += md.split('\n').slice(2).map(v => '<tr>' + v.split('|').map(c => '<td>' + c.trim() + '</td>').join('') + '</tr>').join('\n')
+    text += '<tbody>\n';
+    text += '</table>'
+    return text;
+  }
   
   return {
-    "convert": function(swaggerText) {
+    "convert": function(swaggerText, option) {
+      option = option || {};
       var swagger = jsyaml.load(swaggerText);
       expandRefs(swagger);
       
@@ -217,7 +232,11 @@ const OpenApi3ToMarkdown = (function() {
             output += `#### リクエスト\n`
             output += `application/x-www-form-urlencoded  \n\n`
 
-            output += formProperties2Table(formSchema);
+            if(option.isUseHtmlTable) {
+              output += formProperties2HtmlTable(formSchema);
+            } else {
+              output += formProperties2Table(formSchema);
+            }            
             output += '\n\n'
           }
 

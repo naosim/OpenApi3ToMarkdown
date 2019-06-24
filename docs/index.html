@@ -2,7 +2,7 @@
 <meta charset="utf-8" />
 <style>
 </style>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.4.2/js-yaml.min.js'></script>  
+<script src='https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.13.1/js-yaml.min.js'></script>  
 
 <textarea id="inputtext">
 openapi: "3.0.2"
@@ -136,7 +136,8 @@ components:
 								title: 例外
 								
 																	
-</textarea>
+</textarea><br>
+<label><input type="checkbox" id="useHtmlTable" />use HTML table</label><br>
 <button>RUN</button>
 <!-- <textarea id="outputtext"></textarea> -->
 <pre><code id="outputtext"></code></pre>
@@ -144,8 +145,12 @@ components:
 <script>
 
 document.querySelector('button').addEventListener('click', () => {
-	const input = document.querySelector('#inputtext').value.trim().split('\t').join('  ');;
-	var output = OpenApi3ToMarkdown.convert(input);
+	const input = document.querySelector('#inputtext').value.trim().split('\t').join('  ');
+	const isUseHtmlTable = document.querySelector('#useHtmlTable').checked;
+	const option = {
+		isUseHtmlTable: isUseHtmlTable
+	}
+	var output = OpenApi3ToMarkdown.convert(input, option);
 	document.querySelector('#outputtext').innerText = output;
 })
 </script>
